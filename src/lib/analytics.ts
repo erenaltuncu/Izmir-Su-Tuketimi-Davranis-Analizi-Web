@@ -37,8 +37,8 @@ export const filterAndSort = (
 ) => {
   const lowered = query.trim().toLocaleLowerCase("tr");
   const filtered = records.filter((item) => {
-    const districtOk = district === "Tum Ilceler" || item.ILCE === district;
-    const segmentOk = segment === "Tum Segmentler" || item.Segment_Adi === segment;
+    const districtOk = district === "Tüm İlçeler" || item.ILCE === district;
+    const segmentOk = segment === "Tüm Segmentler" || item.Segment_Adi === segment;
     const searchOk = lowered.length === 0 || item.MAHALLE.toLocaleLowerCase("tr").includes(lowered);
     return districtOk && segmentOk && searchOk;
   });
@@ -59,12 +59,12 @@ export const byDistrictSummary = (records: WaterRecord[]) => {
   return [...map.entries()]
     .map(([district, items]) => ({
       district,
-      avgConsumption: average(items.map((x) => x.Ortalama_Tuketim)),
-      avgSummerScore: average(items.map((x) => x.Yazlikci_Skoru)),
+      ortalamaTuketim: average(items.map((x) => x.Ortalama_Tuketim)),
+      ortalamaYazlikciSkoru: average(items.map((x) => x.Yazlikci_Skoru)),
       segmentCounts: items.reduce<Record<string, number>>((acc, item) => {
         acc[item.Segment_Adi] = (acc[item.Segment_Adi] ?? 0) + 1;
         return acc;
       }, {})
     }))
-    .sort((a, b) => b.avgConsumption - a.avgConsumption);
+    .sort((a, b) => b.ortalamaTuketim - a.ortalamaTuketim);
 };
