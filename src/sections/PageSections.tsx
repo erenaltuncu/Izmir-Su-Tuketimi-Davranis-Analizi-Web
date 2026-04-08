@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -25,26 +26,41 @@ import { Card, FadeIn, Section } from "../components/ui";
 
 const PIE_ALL_DISTRICTS = "__ALL__";
 
+const SEGMENT_COMPARE_ROW_CLASS = "flex h-full min-h-[420px] flex-col";
+
 const ImagePanel = ({
   fileName,
   title,
   aspectClass = "aspect-[16/9]",
-  onOpen
+  onOpen,
+  fillBody = false,
+  cardClassName
 }: {
   fileName: string;
   title: string;
   aspectClass?: string;
   onOpen: (image: { src: string; title: string }) => void;
+  /** İki sütunlu grafik satırında kart yüksekliğini eşitlemek için: gövde flex ile dolar, aspect oranı kullanılmaz. */
+  fillBody?: boolean;
+  cardClassName?: string;
 }) => (
-  <Card>
+  <Card className={clsx(fillBody && SEGMENT_COMPARE_ROW_CLASS, cardClassName)}>
     <button
       type="button"
       onClick={() => onOpen({ src: `/images/${fileName}`, title })}
-      className="block w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+      className={clsx(
+        "w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400",
+        fillBody ? "flex min-h-0 flex-1 flex-col" : "block"
+      )}
       aria-label={`${title} görselini büyüt`}
     >
-      <p className="mb-3 text-sm font-semibold text-slate-200">{title}</p>
-      <div className={`overflow-hidden rounded-xl border border-white/10 bg-slate-950/80 ${aspectClass}`}>
+      <p className="mb-3 shrink-0 text-sm font-semibold text-slate-200">{title}</p>
+      <div
+        className={clsx(
+          "overflow-hidden rounded-xl border border-white/10 bg-slate-950/80",
+          fillBody ? "min-h-0 flex-1" : aspectClass
+        )}
+      >
         <img
           src={`/images/${fileName}`}
           alt={title}
@@ -253,21 +269,23 @@ export function PageSections() {
             </Card>
           ))}
         </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <ImagePanel fileName="scatter_plot.png" title="Hazır Segment Dağılım Görseli" aspectClass="aspect-[4/3]" onOpen={setSelectedImage} />
-          <Card className="h-[360px]">
-            <p className="mb-2 text-sm font-semibold text-slate-200">Canlı Scatter (Tooltip Destekli)</p>
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart margin={{ top: 12, right: 12, left: 0, bottom: 12 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis dataKey="Yazlikci_Skoru" name="Yazlıkçı Skoru" stroke="#cbd5e1" />
-                <YAxis dataKey="Ortalama_Tuketim" name="Ortalama Tüketim" stroke="#cbd5e1" />
-                <Tooltip cursor={{ strokeDasharray: "4 4" }} />
-                <Scatter data={waterData}>
-                  {waterData.map((entry) => <Cell key={`${entry.ILCE}-${entry.MAHALLE}`} fill={segmentDescriptions[entry.Segment_Adi].color} />)}
-                </Scatter>
-              </ScatterChart>
-            </ResponsiveContainer>
+        <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+          <ImagePanel fileName="scatter_plot.png" title="Hazır Segment Dağılım Görseli" onOpen={setSelectedImage} fillBody />
+          <Card className={clsx(SEGMENT_COMPARE_ROW_CLASS)}>
+            <p className="mb-2 shrink-0 text-sm font-semibold text-slate-200">Canlı Scatter (Tooltip Destekli)</p>
+            <div className="min-h-0 w-full flex-1">
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart margin={{ top: 12, right: 12, left: 0, bottom: 12 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="Yazlikci_Skoru" name="Yazlıkçı Skoru" stroke="#cbd5e1" />
+                  <YAxis dataKey="Ortalama_Tuketim" name="Ortalama Tüketim" stroke="#cbd5e1" />
+                  <Tooltip cursor={{ strokeDasharray: "4 4" }} />
+                  <Scatter data={waterData}>
+                    {waterData.map((entry) => <Cell key={`${entry.ILCE}-${entry.MAHALLE}`} fill={segmentDescriptions[entry.Segment_Adi].color} />)}
+                  </Scatter>
+                </ScatterChart>
+              </ResponsiveContainer>
+            </div>
           </Card>
         </div>
       </Section>
