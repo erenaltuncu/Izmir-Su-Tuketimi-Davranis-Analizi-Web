@@ -1,5 +1,7 @@
 # İzmir Su Tüketimi — Davranış Analizi Web
 
+Canlı Demo: [izmir-su-tuketimi-davranis-analizi.vercel.app]
+
 İzmir ilçe–mahalle ölçeğinde su tüketimi verilerini; KPI’lar, segment açıklamaları, etkileşimli keşif alanı ve Recharts grafikleriyle sunan tek sayfalık bir **statik** web uygulamasıdır. Veri istemci tarafında gömülüdür; ayrı bir backend gerektirmez.
 
 **Teknoloji:** React 19, TypeScript, Vite 8, Tailwind CSS 4, Recharts, Framer Motion.
